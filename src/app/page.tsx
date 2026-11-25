@@ -35,7 +35,7 @@ export default function HomePage() {
             />
             <Badge variant="secondary">Ready</Badge>
           </div>
-          <CardTitle className="text-2xl">Project Starter</CardTitle>
+          <CardTitle className="text-2xl">NEXOLOUS PIERCER</CardTitle>
           <CardDescription>
             Configured with Next.js TypeScript, Tailwind CSS, shadcn/ui, and Clean Architecture.
           </CardDescription>
