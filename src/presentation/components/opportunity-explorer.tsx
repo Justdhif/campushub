@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -66,6 +68,8 @@ export function OpportunityExplorer({
   initialCategory = "all",
   initialSelectedId,
 }: OpportunityExplorerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const { savedIds, isSaved, toggleSaved } = useWorkspaceState();
 
   const [query, setQuery] = React.useState("");
@@ -122,7 +126,12 @@ export function OpportunityExplorer({
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setSelectedId(null)}
+              onClick={() => {
+                setSelectedId(null);
+                if (initialSelectedId) {
+                  router.replace(pathname, { scroll: false });
+                }
+              }}
               className="h-auto px-0 py-1 text-sm font-medium text-slate-600 hover:bg-transparent hover:text-violet-700"
             >
               <ArrowLeft className="size-4" aria-hidden="true" />
@@ -134,7 +143,7 @@ export function OpportunityExplorer({
             <p className="text-sm text-slate-500">
               {selectedOpportunity.organization} · {selectedOpportunity.category}
             </p>
-            <h2 className="text-2xl font-bold tracking-tight text-[#103757]">
+            <h2 className="text-2xl font-bold tracking-tight text-violet-700">
               {selectedOpportunity.title}
             </h2>
             <p className="text-sm text-slate-500">
@@ -143,12 +152,12 @@ export function OpportunityExplorer({
             </p>
           </div>
 
-          <div className="rounded-xl bg-[#f0f5fa] px-4 py-3 text-sm font-semibold text-[#103757]">
+          <div className="rounded-xl bg-violet-50 px-4 py-3 text-sm font-semibold text-violet-700">
             {selectedOpportunity.compensation}
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-base font-bold text-[#103757]">
+            <h3 className="text-base font-bold text-violet-700">
               Tentang peluang ini
             </h3>
             <p className="text-sm leading-relaxed text-slate-600">
@@ -157,7 +166,7 @@ export function OpportunityExplorer({
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-base font-bold text-[#103757]">
+            <h3 className="text-base font-bold text-violet-700">
               Kriteria peserta
             </h3>
             <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">
@@ -196,7 +205,7 @@ export function OpportunityExplorer({
         <div>
           <h2
             id="opportunity-list-heading"
-            className="text-xl font-bold tracking-tight text-[#103757]"
+            className="text-xl font-bold tracking-tight text-violet-700"
           >
             {sectionTitle}
           </h2>
@@ -226,7 +235,7 @@ export function OpportunityExplorer({
               placeholder="Cari posisi, perusahaan, atau kata kunci..."
               enterKeyHint="search"
               spellCheck={false}
-              className="h-11 rounded-xl border-[#dce3ea] bg-white pl-10 text-sm text-[#103757] placeholder:text-slate-400"
+              className="h-11 rounded-xl border-[#dce3ea] bg-white pl-10 text-sm text-violet-700 placeholder:text-slate-400"
             />
           </div>
 
@@ -236,7 +245,7 @@ export function OpportunityExplorer({
             aria-expanded={showFilters}
             onClick={() => setShowFilters((prev) => !prev)}
             className={cn(
-              "h-11 rounded-xl border-[#dce3ea] bg-white px-4 text-sm font-medium text-[#103757]",
+              "h-11 rounded-xl border-[#dce3ea] bg-white px-4 text-sm font-medium text-violet-700",
               showFilters && "border-violet-300 bg-violet-50 text-violet-700"
             )}
           >
@@ -246,7 +255,7 @@ export function OpportunityExplorer({
         </div>
 
         {showFilters && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-violet-200 bg-violet-50 p-3 text-sm text-[#103757]">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-violet-200 bg-violet-50 p-3 text-sm text-violet-700">
             <div className="flex items-center gap-2.5">
               <Checkbox
                 id="remote-only-filter"
@@ -255,7 +264,7 @@ export function OpportunityExplorer({
               />
               <Label
                 htmlFor="remote-only-filter"
-                className="cursor-pointer text-sm font-medium text-[#103757]"
+                className="cursor-pointer text-sm font-medium text-violet-700"
               >
                 Hanya online / remote
               </Label>
@@ -324,23 +333,32 @@ export function OpportunityExplorer({
       {filteredList.length === 0 ? (
         <Card className="items-center justify-center rounded-2xl border border-[#e1e7ed] bg-white p-10 text-center ring-0">
           <div className="space-y-2">
-            <p className="text-base font-bold text-[#103757]">
+            <p className="text-base font-bold text-violet-700">
               Belum ada peluang di sini
             </p>
             <p className="text-sm text-slate-500">
               Coba kata kunci lain, ubah filter, atau simpan peluang favoritmu.
             </p>
           </div>
-          {(query || category !== "all" || remoteOnly) && (
+          {(query || category !== "all" || remoteOnly) ? (
             <Button
               type="button"
               variant="outline"
               onClick={resetFilters}
               className="mt-2 rounded-lg"
             >
-              Reset pencarian & filter
+              Reset pencarian &amp; filter
             </Button>
-          )}
+          ) : savedOnly ? (
+            <Button
+              nativeButton={false}
+              className="mt-2 rounded-lg bg-violet-600 text-white hover:bg-violet-700"
+              render={<Link href="/jelajahi" />}
+            >
+              Jelajahi peluang
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Button>
+          ) : null}
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -396,7 +414,7 @@ export function OpportunityExplorer({
                       />
                     </p>
 
-                    <CardTitle className="text-base font-bold leading-6 text-[#103757]">
+                    <CardTitle className="text-base font-bold leading-6 text-violet-700">
                       <button
                         type="button"
                         onClick={() => setSelectedId(item.id)}

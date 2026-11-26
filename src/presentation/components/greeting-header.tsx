@@ -11,10 +11,12 @@ export function GreetingHeader({
   title,
   personalized = false,
 }: GreetingHeaderProps) {
-  const { firstName } = useWorkspaceState();
+  const { isRegistered, firstName } = useWorkspaceState();
 
   const headingText = personalized
-    ? `Halo, ${firstName}! Siap melangkah lebih jauh? ✦`
+    ? isRegistered
+      ? `Halo, ${firstName}! Siap melangkah lebih jauh? ✦`
+      : "Siap melangkah lebih jauh? ✦"
     : title ?? "Peluang pilihanmu ✦";
 
   return (
@@ -22,7 +24,7 @@ export function GreetingHeader({
       <p className="text-xs font-medium tracking-wider text-slate-500 uppercase">
         MASA DEPANMU DIMULAI DI SINI
       </p>
-      <h1 className="text-2xl font-bold tracking-tight text-[#103757] md:text-[28px]">
+      <h1 className="text-2xl font-bold tracking-tight text-violet-700 md:text-[28px]">
         {headingText}
       </h1>
       <p className="text-sm text-slate-500">

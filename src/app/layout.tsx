@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="id"
       className={`${dmSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-screen overflow-x-hidden bg-[#f6f8fa] font-sans text-[#103757]">
+      <body className="min-h-screen overflow-x-hidden bg-[#f6f8fa] font-sans text-violet-700">
         <WorkspaceProvider>{children}</WorkspaceProvider>
       </body>
     </html>

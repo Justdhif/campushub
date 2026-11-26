@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -8,8 +9,10 @@ import {
   Check,
   Globe,
   GraduationCap,
+  LogOut,
   Plus,
   Sparkles,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -59,7 +62,13 @@ const INTEREST_OPTIONS: readonly {
 
 export function ProfileForm() {
   const router = useRouter();
-  const { profile, updateProfile } = useWorkspaceState();
+  const {
+    profile,
+    isRegistered,
+    isProfileCompleted,
+    updateProfile,
+    logout,
+  } = useWorkspaceState();
 
   const [edits, setEdits] = React.useState<Partial<UserProfile>>({});
   const [savedFeedback, setSavedFeedback] = React.useState(false);
@@ -84,6 +93,49 @@ export function ProfileForm() {
     [draft]
   );
 
+  if (!isRegistered) {
+    return (
+      <Card className="space-y-5 rounded-3xl border border-[#e1e7ed] bg-white p-6 ring-0 md:p-8">
+        <div className="flex items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+            <UserPlus className="size-5" aria-hidden="true" />
+          </span>
+          <div className="space-y-1">
+            <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase">
+              LANGKAH 01 DIPERLUKAN
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-violet-700">
+              Daftarkan dirimu dulu, yuk!
+            </h1>
+            <p className="text-sm text-slate-500">
+              Untuk membuat dan menyimpan profil mahasiswa, selesaikan langkah
+              registrasi singkat terlebih dahulu.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 pt-1">
+          <Button
+            nativeButton={false}
+            className="h-11 rounded-lg bg-violet-600 px-5 text-sm font-semibold text-white hover:bg-violet-700"
+            render={<Link href="/registrasi" />}
+          >
+            Mulai registrasi
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            className="h-11 rounded-lg border-[#dce3ea] px-5 text-sm font-medium text-violet-700"
+            render={<Link href="/" />}
+          >
+            Kembali ke beranda
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
   const toggleInterest = (category: OpportunityCategory) => {
     setSavedFeedback(false);
     setDraft((prev) => {
@@ -104,25 +156,43 @@ export function ProfileForm() {
 
   return (
     <Card className="rounded-3xl border border-[#e1e7ed] bg-white p-6 ring-0 md:p-8">
-      <div className="mb-5 space-y-1.5">
-        <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase">
-          LANGKAH 02 DARI 02
-        </p>
-        <h1 className="text-2xl font-bold tracking-tight text-[#103757]">
-          Kenalan lebih dekat, yuk!
-        </h1>
-        <p className="text-sm text-slate-500">
-          Lengkapi profil agar tujuan dan minatmu terkumpul di satu tempat.
-        </p>
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+        <div className="space-y-1.5">
+          <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase">
+            {isProfileCompleted ? "PROFIL SAYA" : "LANGKAH 02 DARI 02"}
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight text-violet-700">
+            {isProfileCompleted
+              ? "Perbarui profilmu"
+              : "Kenalan lebih dekat, yuk!"}
+          </h1>
+          <p className="text-sm text-slate-500">
+            Lengkapi profil agar tujuan dan minatmu terkumpul di satu tempat.
+          </p>
+        </div>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            logout();
+            router.push("/");
+          }}
+          className="h-9 rounded-lg px-3 text-xs font-semibold text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+        >
+          <LogOut className="size-3.5" aria-hidden="true" />
+          Keluar akun
+        </Button>
       </div>
 
       {/* Completeness Progress Bar */}
-      <div className="mb-6 rounded-xl bg-[#f0f5fa] p-4">
+      <div className="mb-6 rounded-xl bg-violet-50 p-4">
         <Progress value={completeness} className="gap-2.5">
-          <ProgressLabel className="text-xs font-semibold text-[#103757]">
+          <ProgressLabel className="text-xs font-semibold text-violet-700">
             Kelengkapan profil
           </ProgressLabel>
-          <ProgressValue className="text-xs font-bold text-[#103757]">
+          <ProgressValue className="text-xs font-bold text-violet-700">
             {() => `${completeness}%`}
           </ProgressValue>
         </Progress>
@@ -133,7 +203,7 @@ export function ProfileForm() {
           <div className="space-y-1.5">
             <Label
               htmlFor="profile-fullname"
-              className="text-sm font-medium text-[#103757]"
+              className="text-sm font-medium text-violet-700"
             >
               Nama lengkap <span aria-hidden="true">*</span>
             </Label>
@@ -155,7 +225,7 @@ export function ProfileForm() {
           <div className="space-y-1.5">
             <Label
               htmlFor="profile-email"
-              className="text-sm font-medium text-[#103757]"
+              className="text-sm font-medium text-violet-700"
             >
               Email <span aria-hidden="true">*</span>
             </Label>
@@ -179,7 +249,7 @@ export function ProfileForm() {
 
         <div className="space-y-4 border-t border-slate-100 pt-5">
           <div>
-            <h2 className="text-sm font-bold text-[#103757]">
+            <h2 className="text-sm font-bold text-violet-700">
               Pendidikan &amp; domisili
             </h2>
             <p className="text-xs text-slate-500">
@@ -190,7 +260,7 @@ export function ProfileForm() {
           <div className="space-y-1.5">
             <Label
               htmlFor="profile-university"
-              className="text-sm font-medium text-[#103757]"
+              className="text-sm font-medium text-violet-700"
             >
               Perguruan tinggi <span aria-hidden="true">*</span>
             </Label>
@@ -213,7 +283,7 @@ export function ProfileForm() {
           <div className="space-y-1.5">
             <Label
               htmlFor="profile-major"
-              className="text-sm font-medium text-[#103757]"
+              className="text-sm font-medium text-violet-700"
             >
               Program studi <span aria-hidden="true">*</span>
             </Label>
@@ -234,7 +304,7 @@ export function ProfileForm() {
             <div className="space-y-1.5">
               <Label
                 htmlFor="profile-level"
-                className="text-sm font-medium text-[#103757]"
+                className="text-sm font-medium text-violet-700"
               >
                 Jenjang <span aria-hidden="true">*</span>
               </Label>
@@ -266,7 +336,7 @@ export function ProfileForm() {
             <div className="space-y-1.5">
               <Label
                 htmlFor="profile-semester"
-                className="text-sm font-medium text-[#103757]"
+                className="text-sm font-medium text-violet-700"
               >
                 Semester <span aria-hidden="true">*</span>
               </Label>
@@ -296,7 +366,7 @@ export function ProfileForm() {
           <div className="space-y-1.5">
             <Label
               htmlFor="profile-city"
-              className="text-sm font-medium text-[#103757]"
+              className="text-sm font-medium text-violet-700"
             >
               Kota domisili <span aria-hidden="true">*</span>
             </Label>
@@ -317,7 +387,7 @@ export function ProfileForm() {
 
         <div className="space-y-3 border-t border-slate-100 pt-5">
           <div>
-            <p className="text-sm font-bold text-[#103757]">
+            <p className="text-sm font-bold text-violet-700">
               Peluang yang kamu cari <span aria-hidden="true">*</span>
             </p>
             <p className="text-xs text-slate-500">
@@ -337,7 +407,7 @@ export function ProfileForm() {
                   aria-pressed={selected}
                   onClick={() => toggleInterest(value)}
                   className={cn(
-                    "h-11 justify-between rounded-xl border-[#dce3ea] px-3.5 text-sm font-medium text-[#103757]",
+                    "h-11 justify-between rounded-xl border-[#dce3ea] px-3.5 text-sm font-medium text-violet-700",
                     selected &&
                       "border-violet-500 bg-violet-50 font-semibold text-violet-800"
                   )}
@@ -363,7 +433,7 @@ export function ProfileForm() {
         <div className="space-y-1.5">
           <Label
             htmlFor="profile-bio"
-            className="text-sm font-medium text-[#103757]"
+            className="text-sm font-medium text-violet-700"
           >
             Tentang kamu{" "}
             <span className="font-normal text-slate-500">(opsional)</span>
@@ -392,7 +462,7 @@ export function ProfileForm() {
           type="submit"
           className="h-11 w-full rounded-lg bg-violet-600 text-sm font-semibold text-white hover:bg-violet-700"
         >
-          Simpan profil
+          {isProfileCompleted ? "Simpan perubahan" : "Simpan profil & mulai"}
           <ArrowRight className="size-4" aria-hidden="true" />
         </Button>
 

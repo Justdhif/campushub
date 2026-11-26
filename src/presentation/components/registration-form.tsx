@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, LogOut } from "lucide-react";
 import {
   validateRegistration,
   type RegistrationErrors,
@@ -17,7 +18,13 @@ import { useWorkspaceState } from "@/presentation/hooks/use-workspace-state";
 
 export function RegistrationForm() {
   const router = useRouter();
-  const { profile, updateProfile } = useWorkspaceState();
+  const {
+    profile,
+    isRegistered,
+    completeRegistration,
+    activateDemoProfile,
+    logout,
+  } = useWorkspaceState();
 
   const [edits, setEdits] = React.useState<Partial<RegistrationInput>>({});
   const [touched, setTouched] = React.useState<
@@ -81,13 +88,75 @@ export function RegistrationForm() {
     }
 
     // Store only profile identity locally; password is never persisted in localStorage.
-    updateProfile({
-      ...profile,
-      fullName: values.fullName.trim(),
-      email: values.email.trim(),
+    completeRegistration({
+      fullName: values.fullName,
+      email: values.email,
     });
     router.push("/profil");
   };
+
+  if (isRegistered) {
+    return (
+      <Card className="space-y-5 rounded-3xl border border-[#e1e7ed] bg-white p-6 ring-0 md:p-8">
+        <div className="flex items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+            <CheckCircle2 className="size-5" aria-hidden="true" />
+          </span>
+          <div className="space-y-1">
+            <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase">
+              AKUN AKTIF
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-violet-700">
+              Kamu sudah terdaftar
+            </h1>
+            <p className="text-sm text-slate-500">
+              Masuk sebagai{" "}
+              <span className="font-semibold text-violet-700">
+                {profile.fullName || "Mahasiswa"}
+              </span>
+              {profile.email ? ` (${profile.email})` : ""}.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 pt-1">
+          <Button
+            nativeButton={false}
+            className="h-11 rounded-lg bg-violet-600 px-5 text-sm font-semibold text-white hover:bg-violet-700"
+            render={<Link href="/profil" />}
+          >
+            Kelola profil saya
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            className="h-11 rounded-lg border-[#dce3ea] px-5 text-sm font-medium text-violet-700"
+            render={<Link href="/" />}
+          >
+            Kembali ke beranda
+          </Button>
+        </div>
+
+        <div className="border-t border-slate-100 pt-4">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              logout();
+              setEdits({});
+              setTouched({});
+              setSubmitted(false);
+            }}
+            className="h-auto px-0 py-1 text-xs font-semibold text-orange-600 hover:bg-transparent hover:text-orange-700"
+          >
+            <LogOut className="size-3.5" aria-hidden="true" />
+            Keluar &amp; daftar akun baru
+          </Button>
+        </div>
+      </Card>
+    );
+  }
 
   const nameError = visibleError("fullName");
   const emailError = visibleError("email");
@@ -101,7 +170,7 @@ export function RegistrationForm() {
         <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase">
           LANGKAH 01 DARI 02
         </p>
-        <h1 className="text-2xl font-bold tracking-tight text-[#103757]">
+        <h1 className="text-2xl font-bold tracking-tight text-violet-700">
           Mulai perjalananmu
         </h1>
         <p className="text-sm text-slate-500">
@@ -119,7 +188,7 @@ export function RegistrationForm() {
           <div className="space-y-1.5">
             <Label
               htmlFor="reg-fullname"
-              className="text-sm font-medium text-[#103757]"
+              className="text-sm font-medium text-violet-700"
             >
               Nama lengkap <span aria-hidden="true">*</span>
             </Label>
@@ -151,7 +220,7 @@ export function RegistrationForm() {
           <div className="space-y-1.5">
             <Label
               htmlFor="reg-email"
-              className="text-sm font-medium text-[#103757]"
+              className="text-sm font-medium text-violet-700"
             >
               Email <span aria-hidden="true">*</span>
             </Label>
@@ -185,7 +254,7 @@ export function RegistrationForm() {
         <div className="space-y-1.5">
           <Label
             htmlFor="reg-password"
-            className="text-sm font-medium text-[#103757]"
+            className="text-sm font-medium text-violet-700"
           >
             Kata sandi <span aria-hidden="true">*</span>
           </Label>
@@ -237,7 +306,7 @@ export function RegistrationForm() {
         <div className="space-y-1.5">
           <Label
             htmlFor="reg-confirm-password"
-            className="text-sm font-medium text-[#103757]"
+            className="text-sm font-medium text-violet-700"
           >
             Konfirmasi kata sandi <span aria-hidden="true">*</span>
           </Label>
@@ -309,9 +378,24 @@ export function RegistrationForm() {
           <ArrowRight className="size-4" aria-hidden="true" />
         </Button>
 
-        <p className="text-center text-xs text-slate-500">
-          Kata sandi hanya digunakan untuk validasi formulir, bukan autentikasi.
-        </p>
+        <div className="space-y-2 border-t border-slate-100 pt-4 text-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              activateDemoProfile();
+              router.push("/");
+            }}
+            className="h-auto px-2 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-50"
+          >
+            Atau masuk cepat dengan profil contoh (Andi Pratama)
+          </Button>
+          <p className="text-xs text-slate-500">
+            Kata sandi hanya digunakan untuk validasi formulir, bukan
+            autentikasi.
+          </p>
+        </div>
       </form>
     </Card>
   );

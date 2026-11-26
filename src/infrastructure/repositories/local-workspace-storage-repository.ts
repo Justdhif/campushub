@@ -39,9 +39,14 @@ export class LocalWorkspaceStorageRepository
       const raw = window.localStorage.getItem(PROFILE_KEY);
       if (!raw) return DEFAULT_USER_PROFILE;
       const parsed = JSON.parse(raw) as Partial<UserProfile>;
+      const hasLegacyIdentity =
+        typeof parsed.fullName === "string" &&
+        parsed.fullName.trim().length > 0;
       return {
         ...DEFAULT_USER_PROFILE,
         ...parsed,
+        isRegistered: parsed.isRegistered ?? hasLegacyIdentity,
+        isProfileCompleted: parsed.isProfileCompleted ?? false,
         interests: Array.isArray(parsed.interests) ? parsed.interests : [],
       };
     } catch {

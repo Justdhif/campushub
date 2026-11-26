@@ -3,6 +3,8 @@ import type { OpportunityCategory } from "./opportunity";
 export type EducationLevel = "D3" | "D4" | "S1" | "S2" | "S3";
 
 export interface UserProfile {
+  readonly isRegistered: boolean;
+  readonly isProfileCompleted: boolean;
   readonly fullName: string;
   readonly email: string;
   readonly university: string;
@@ -23,6 +25,8 @@ export interface RegistrationInput {
 }
 
 export const DEFAULT_USER_PROFILE: UserProfile = {
+  isRegistered: false,
+  isProfileCompleted: false,
   fullName: "",
   email: "",
   university: "",
@@ -32,6 +36,20 @@ export const DEFAULT_USER_PROFILE: UserProfile = {
   city: "",
   interests: [],
   bio: "",
+};
+
+export const DEMO_USER_PROFILE: UserProfile = {
+  isRegistered: true,
+  isProfileCompleted: true,
+  fullName: "Andi Pratama",
+  email: "andi.pratama@mahasiswa.ac.id",
+  university: "Institut Teknologi Bandung",
+  major: "Teknik Informatika",
+  level: "S1",
+  semester: "5",
+  city: "Bandung",
+  interests: ["Magang", "Beasiswa"],
+  bio: "Mahasiswa teknik informatika yang tertarik pada product engineering dan desain antarmuka.",
 };
 
 /**
@@ -53,11 +71,11 @@ export function calculateProfileCompleteness(profile: UserProfile): number {
 }
 
 /**
- * Derives 2-letter initials for the workspace avatar, falling back to "AP".
+ * Derives 2-letter initials for the workspace avatar, falling back to "CH".
  */
 export function getInitials(fullName: string): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "AP";
+  if (parts.length === 0) return "CH";
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }

@@ -15,6 +15,7 @@ import {
   LogIn,
   Search,
   Sparkles,
+  UserPlus,
   X,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -30,25 +31,45 @@ interface WorkspaceShellProps {
   children: React.ReactNode;
 }
 
-const NAV_ITEMS = [
+const CORE_NAV_ITEMS = [
   { href: "/", label: "Beranda", icon: LayoutGrid },
   { href: "/jelajahi", label: "Jelajahi peluang", icon: Search },
   { href: "/tersimpan", label: "Tersimpan", icon: Bookmark, hasSavedBadge: true },
   { href: "/kalender", label: "Kalender", icon: Calendar },
-  { href: "/profil", label: "Profil saya", icon: GraduationCap },
-  { href: "/registrasi", label: "Registrasi", icon: LogIn },
 ] as const;
 
 export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
   const pathname = usePathname();
   const {
     savedIds,
+    isRegistered,
+    isProfileCompleted,
     displayName,
     initials,
     isInfoBannerOpen,
     openInfoBanner,
     dismissInfoBanner,
   } = useWorkspaceState();
+
+  const navItems = React.useMemo(
+    () => [
+      ...CORE_NAV_ITEMS,
+      isRegistered
+        ? {
+            href: "/profil",
+            label: "Profil saya",
+            icon: GraduationCap,
+            hasSavedBadge: false,
+          }
+        : {
+            href: "/registrasi",
+            label: "Daftar akun",
+            icon: LogIn,
+            hasSavedBadge: false,
+          },
+    ],
+    [isRegistered]
+  );
 
   return (
     <div className="min-h-screen bg-[#f6f8fa]">
@@ -60,7 +81,7 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
       </a>
 
       {/* Persistent Desktop Sidebar (224px) */}
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-[224px] flex-col border-r border-[#dfe5ec] bg-white px-5 py-8 lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-[#dfe5ec] bg-white px-5 py-8 lg:flex">
         <div className="mb-8 px-1">
           <CampusHubLogo variant="light" />
         </div>
@@ -70,7 +91,7 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
         </p>
 
         <nav aria-label="Workspace" className="space-y-1">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
@@ -82,11 +103,11 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
                 className={cn(
                   "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
                   isActive
-                    ? "bg-[#e2ecf5] font-semibold text-violet-700"
+                    ? "bg-violet-100 font-semibold text-violet-700"
                     : "font-medium text-slate-600 hover:bg-slate-50 hover:text-violet-700"
                 )}
               >
-                <Icon className="size-[18px] shrink-0" aria-hidden="true" />
+                <Icon className="size-4.5 shrink-0" aria-hidden="true" />
                 <span className="truncate">{item.label}</span>
                 {"hasSavedBadge" in item && item.hasSavedBadge && (
                   <Badge
@@ -104,20 +125,20 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
         <div className="mt-auto space-y-4 pt-6">
           <div className="rounded-xl bg-[#f0f4f8] p-4">
             <Sparkles
-              className="mb-2 size-4 text-[#103757]"
+              className="mb-2 size-4 text-violet-700"
               aria-hidden="true"
             />
-            <p className="text-sm font-bold leading-snug text-[#103757]">
+            <p className="text-sm font-bold leading-snug text-violet-700">
               Langkah kecil, masa depan besar.
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
               Peluang terbaik dimulai dari keberanian mencoba.
             </p>
             <Link
-              href="/jelajahi"
+              href={isRegistered ? "/jelajahi" : "/registrasi"}
               className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:underline"
             >
-              Mulai eksplorasi
+              {isRegistered ? "Mulai eksplorasi" : "Daftar sekarang"}
               <ArrowRight className="size-3.5" aria-hidden="true" />
             </Link>
           </div>
@@ -128,36 +149,59 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
             onClick={openInfoBanner}
             className="h-auto w-full justify-start gap-2.5 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-violet-700"
           >
-            <HelpCircle className="size-[18px]" aria-hidden="true" />
+            <HelpCircle className="size-4.5" aria-hidden="true" />
             Pusat bantuan
           </Button>
 
-          <Link
-            href="/profil"
-            className="flex items-center gap-3 rounded-xl border-t border-slate-100 pt-3 transition-colors hover:opacity-90"
-          >
-            <Avatar size="lg" className="bg-[#dce8f2] text-[#103757]">
-              <AvatarFallback className="bg-[#dce8f2] text-sm font-semibold text-[#103757]">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-[#103757]">
-                {displayName}
-              </p>
-              <p className="text-xs text-slate-500">Edit profil</p>
-            </div>
-            <ChevronRight
-              className="size-4 shrink-0 text-slate-400"
-              aria-hidden="true"
-            />
-          </Link>
+          {isRegistered ? (
+            <Link
+              href="/profil"
+              className="flex items-center gap-3 rounded-xl border-t border-slate-100 pt-3 transition-colors hover:opacity-90"
+            >
+              <Avatar size="lg" className="bg-[#dce8f2] text-violet-700">
+                <AvatarFallback className="bg-[#dce8f2] text-sm font-semibold text-violet-700">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-violet-700">
+                  {displayName}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {isProfileCompleted ? "Edit profil" : "Lengkapi profil"}
+                </p>
+              </div>
+              <ChevronRight
+                className="size-4 shrink-0 text-slate-400"
+                aria-hidden="true"
+              />
+            </Link>
+          ) : (
+            <Link
+              href="/registrasi"
+              className="flex items-center gap-3 rounded-xl border-t border-slate-100 pt-3 transition-colors hover:opacity-90"
+            >
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#dce8f2] text-violet-700">
+                <UserPlus className="size-4" aria-hidden="true" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-violet-700">
+                  Mode tamu
+                </p>
+                <p className="text-xs text-violet-600">Daftar untuk simpan</p>
+              </div>
+              <ChevronRight
+                className="size-4 shrink-0 text-slate-400"
+                aria-hidden="true"
+              />
+            </Link>
+          )}
         </div>
       </aside>
 
       {/* Main Content Area Offset */}
-      <div className="lg:pl-[224px]">
-        <header className="flex h-[88px] items-center justify-between gap-4 border-b border-slate-700 bg-[#151f2d] px-5 text-white md:px-8">
+      <div className="lg:pl-56">
+        <header className="flex h-22 items-center justify-between gap-4 border-b border-slate-700 bg-violet-900 px-5 text-white md:px-8">
           <div className="min-w-0">
             <p className="text-lg font-bold tracking-tight text-white">
               {pageTitle}
@@ -192,17 +236,28 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
                 aria-hidden="true"
               />
             </Button>
-            <Link
-              href="/profil"
-              aria-label={`Profil ${displayName}`}
-              className="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              <Avatar size="lg" className="bg-[#dce8f2] text-[#103757]">
-                <AvatarFallback className="bg-[#dce8f2] text-sm font-semibold text-[#103757]">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
+
+            {isRegistered ? (
+              <Link
+                href="/profil"
+                aria-label={`Profil ${displayName}`}
+                className="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <Avatar size="lg" className="bg-[#dce8f2] text-violet-700">
+                  <AvatarFallback className="bg-[#dce8f2] text-sm font-semibold text-violet-700">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            ) : (
+              <Button
+                nativeButton={false}
+                className="h-10 rounded-lg bg-violet-600 px-4 text-xs font-semibold text-white hover:bg-violet-500"
+                render={<Link href="/registrasi" />}
+              >
+                Daftar
+              </Button>
+            )}
           </div>
         </header>
 
@@ -211,7 +266,7 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
           aria-label="Navigasi workspace mobile"
           className="flex gap-2 overflow-x-auto border-b border-[#dfe5ec] bg-white px-4 py-2.5 lg:hidden"
         >
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
@@ -223,7 +278,7 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
                 className={cn(
                   "inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs whitespace-nowrap transition-colors",
                   isActive
-                    ? "bg-[#e2ecf5] font-semibold text-violet-700"
+                    ? "bg-violet-100 font-semibold text-violet-700"
                     : "font-medium text-slate-600 hover:bg-slate-50"
                 )}
               >
@@ -266,7 +321,11 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
           </div>
         )}
 
-        <main id="main-content" tabIndex={-1} className="mx-auto max-w-[1560px] p-5 md:p-8">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="mx-auto max-w-[1560px] p-5 md:p-8"
+        >
           <div className="grid min-w-0 grid-cols-1 gap-7 xl:grid-cols-[minmax(0,1fr)_280px]">
             <div className="min-w-0">{children}</div>
             <RightRail />

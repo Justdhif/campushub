@@ -7,7 +7,7 @@ export function HeroBanner() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative mb-7 flex min-h-[223px] flex-col justify-between overflow-hidden rounded-2xl bg-[#e7eff6] p-7 md:flex-row md:items-center md:p-8"
+      className="relative mb-7 flex min-h-55.75 flex-col justify-between overflow-hidden rounded-2xl bg-[#e7eff6] p-7 md:flex-row md:items-center md:p-8"
     >
       <div className="relative z-10 max-w-lg space-y-4">
         <Badge
@@ -19,7 +19,7 @@ export function HeroBanner() {
 
         <h2
           id="hero-heading"
-          className="text-2xl font-bold leading-tight tracking-tight text-[#103757] md:text-[30px]"
+          className="text-2xl font-bold leading-tight tracking-tight text-violet-700 md:text-[30px]"
         >
           Potensimu tanpa batas. Peluangmu juga.
         </h2>

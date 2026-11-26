@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, Check, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CampusHubLogo } from "@/presentation/components/campushub-logo";
+import { useWorkspaceState } from "@/presentation/hooks/use-workspace-state";
 import { cn } from "cn";
 
 interface OnboardingShellProps {
@@ -14,9 +17,12 @@ export function OnboardingShell({
   activeStep,
   children,
 }: OnboardingShellProps) {
+  const { isRegistered, isProfileCompleted } = useWorkspaceState();
+  const isEditingExistingProfile = activeStep === 2 && isProfileCompleted;
+
   return (
     <div className="min-h-screen bg-[#f6f8fa]">
-      <header className="flex min-h-20 flex-wrap items-center justify-between gap-3 border-b border-slate-700 bg-[#151f2d] px-5 py-4 text-white md:px-10">
+      <header className="flex min-h-20 flex-wrap items-center justify-between gap-3 border-b border-slate-700 bg-violet-900 px-5 py-4 text-white md:px-10">
         <CampusHubLogo variant="dark" />
         <Button
           variant="ghost"
@@ -35,23 +41,26 @@ export function OnboardingShell({
       >
         {/* Left Informational Panel */}
         <aside
-          aria-label="Tahapan pendaftaran"
+          aria-label="Informasi tahapan"
           className="space-y-6 rounded-3xl bg-[#e7eff6] p-7 lg:p-9"
         >
           <Badge
             variant="outline"
             className="h-auto rounded-full border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-semibold tracking-wider text-violet-800"
           >
-            LANGKAH PERTAMAMU
+            {isEditingExistingProfile ? "PROFIL MAHASISWA" : "LANGKAH PERTAMAMU"}
           </Badge>
 
           <div className="space-y-3">
-            <h2 className="text-2xl font-bold leading-tight tracking-tight text-[#103757] md:text-[28px]">
-              Masa depan besar, dimulai dari kamu.
+            <h2 className="text-2xl font-bold leading-tight tracking-tight text-violet-700 md:text-[28px]">
+              {isEditingExistingProfile
+                ? "Jaga profilmu tetap relevan."
+                : "Masa depan besar, dimulai dari kamu."}
             </h2>
             <p className="text-sm leading-relaxed text-[#425f7b]">
-              Kenalkan dirimu dan jelajahi kesempatan untuk belajar, bertumbuh,
-              dan melangkah lebih jauh.
+              {isEditingExistingProfile
+                ? "Perbarui latar belakang pendidikan dan minat agar rekomendasi peluang semakin sesuai."
+                : "Kenalkan dirimu dan jelajahi kesempatan untuk belajar, bertumbuh, dan melangkah lebih jauh."}
             </p>
           </div>
 
@@ -60,23 +69,25 @@ export function OnboardingShell({
               <span
                 className={cn(
                   "flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-                  activeStep === 1 || activeStep === 2
+                  isRegistered || activeStep === 1
                     ? "bg-violet-700 text-white"
                     : "border border-violet-300 bg-white text-violet-700"
                 )}
               >
-                {activeStep === 2 ? (
+                {isRegistered ? (
                   <Check className="size-3.5" aria-hidden="true" />
                 ) : (
                   "1"
                 )}
               </span>
               <div>
-                <p className="text-sm font-semibold text-[#103757]">
+                <p className="text-sm font-semibold text-violet-700">
                   Daftarkan dirimu
                 </p>
                 <p className="text-xs text-[#425f7b]">
-                  Mulai perjalanan barumu di CampusHub.
+                  {isRegistered
+                    ? "Identitas lokal sudah aktif."
+                    : "Mulai perjalanan barumu di CampusHub."}
                 </p>
               </div>
             </li>
@@ -85,15 +96,19 @@ export function OnboardingShell({
               <span
                 className={cn(
                   "flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-                  activeStep === 2
+                  activeStep === 2 && isRegistered
                     ? "bg-violet-700 text-white"
                     : "border border-violet-300 bg-white text-violet-700"
                 )}
               >
-                2
+                {isProfileCompleted ? (
+                  <Check className="size-3.5" aria-hidden="true" />
+                ) : (
+                  "2"
+                )}
               </span>
               <div>
-                <p className="text-sm font-semibold text-[#103757]">
+                <p className="text-sm font-semibold text-violet-700">
                   Lengkapi profil
                 </p>
                 <p className="text-xs text-[#425f7b]">
@@ -108,7 +123,7 @@ export function OnboardingShell({
               className="mb-2 size-4 text-violet-700"
               aria-hidden="true"
             />
-            <blockquote className="text-sm font-bold leading-relaxed text-[#103757]">
+            <blockquote className="text-sm font-bold leading-relaxed text-violet-700">
               “Kamu tidak harus hebat untuk memulai. Tapi kamu harus memulai
               untuk menjadi hebat.”
             </blockquote>

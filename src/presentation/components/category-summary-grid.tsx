@@ -56,7 +56,7 @@ export function CategorySummaryGrid() {
                 <Icon className="size-4" />
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#103757]">
+                <p className="text-sm font-semibold text-violet-700">
                   {category}
                 </p>
                 <p className="text-xs text-slate-500">

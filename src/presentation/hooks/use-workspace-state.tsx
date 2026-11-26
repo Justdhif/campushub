@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   DEFAULT_USER_PROFILE,
+  DEMO_USER_PROFILE,
   getInitials,
   type UserProfile,
 } from "@/domain/entities/user-profile";
@@ -13,7 +14,12 @@ interface WorkspaceContextValue {
   isSaved: (id: string) => boolean;
   toggleSaved: (id: string) => void;
   profile: UserProfile;
+  isRegistered: boolean;
+  isProfileCompleted: boolean;
+  completeRegistration: (identity: { fullName: string; email: string }) => void;
   updateProfile: (profile: UserProfile) => void;
+  activateDemoProfile: () => void;
+  logout: () => void;
   displayName: string;
   firstName: string;
   initials: string;
@@ -102,14 +108,46 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     emitWorkspaceChange();
   }, []);
 
-  const updateProfile = React.useCallback((nextProfile: UserProfile) => {
+  const persistProfile = React.useCallback((nextProfile: UserProfile) => {
     cachedProfile = nextProfile;
     workspaceStorageRepository.saveProfile(nextProfile);
     emitWorkspaceChange();
   }, []);
 
-  const displayName = profile.fullName.trim() || "Andi Pratama";
-  const firstName = displayName.split(/\s+/)[0] || "Andi";
+  const completeRegistration = React.useCallback(
+    (identity: { fullName: string; email: string }) => {
+      const current = getProfileSnapshot();
+      persistProfile({
+        ...current,
+        isRegistered: true,
+        fullName: identity.fullName.trim(),
+        email: identity.email.trim(),
+      });
+    },
+    [persistProfile]
+  );
+
+  const updateProfile = React.useCallback(
+    (nextProfile: UserProfile) => {
+      persistProfile({
+        ...nextProfile,
+        isRegistered: true,
+        isProfileCompleted: true,
+      });
+    },
+    [persistProfile]
+  );
+
+  const activateDemoProfile = React.useCallback(() => {
+    persistProfile(DEMO_USER_PROFILE);
+  }, [persistProfile]);
+
+  const logout = React.useCallback(() => {
+    persistProfile(DEFAULT_USER_PROFILE);
+  }, [persistProfile]);
+
+  const displayName = profile.fullName.trim() || "Mahasiswa";
+  const firstName = displayName.split(/\s+/)[0] || "Mahasiswa";
   const initials = getInitials(displayName);
 
   const value = React.useMemo<WorkspaceContextValue>(
@@ -118,7 +156,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       isSaved,
       toggleSaved,
       profile,
+      isRegistered: profile.isRegistered,
+      isProfileCompleted: profile.isProfileCompleted,
+      completeRegistration,
       updateProfile,
+      activateDemoProfile,
+      logout,
       displayName,
       firstName,
       initials,
@@ -131,7 +174,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       isSaved,
       toggleSaved,
       profile,
+      completeRegistration,
       updateProfile,
+      activateDemoProfile,
+      logout,
       displayName,
       firstName,
       initials,

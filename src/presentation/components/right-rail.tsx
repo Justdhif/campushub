@@ -19,7 +19,7 @@ export function RightRail() {
         <CardHeader className="gap-1 p-0">
           <div className="flex items-center gap-2">
             <Clock className="size-4 text-orange-600" aria-hidden="true" />
-            <CardTitle className="text-base font-bold text-[#103757]">
+            <CardTitle className="text-base font-bold text-violet-700">
               Segera ditutup
             </CardTitle>
           </div>
@@ -46,7 +46,7 @@ export function RightRail() {
                     {item.organizationBadgeText}
                   </span>
                   <div className="min-w-0 flex-1 space-y-1">
-                    <p className="text-sm font-semibold leading-snug text-[#103757] group-hover:text-violet-600">
+                    <p className="text-sm font-semibold leading-snug text-violet-700 group-hover:text-violet-600">
                       {item.title}
                     </p>
                     <p className="text-xs text-slate-500">{item.organization}</p>
@@ -77,7 +77,7 @@ export function RightRail() {
         </CardContent>
       </Card>
 
-      <Card className="relative gap-3 overflow-hidden rounded-2xl border border-slate-700 bg-[#151f2d] p-5 text-white ring-0">
+      <Card className="relative gap-3 overflow-hidden rounded-2xl border border-slate-700 bg-violet-900 p-5 text-white ring-0">
         <div
           className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-white/5"
           aria-hidden="true"

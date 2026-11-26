@@ -17,7 +17,7 @@ export function CalendarAgenda({ opportunities }: CalendarAgendaProps) {
       <Card className="gap-4 rounded-2xl border border-[#e1e7ed] bg-white p-6 ring-0">
         <h2
           id="calendar-agenda-heading"
-          className="text-lg font-bold tracking-tight text-[#103757]"
+          className="text-lg font-bold tracking-tight text-violet-700"
         >
           Agenda tenggat peluang
         </h2>
@@ -34,7 +34,7 @@ export function CalendarAgenda({ opportunities }: CalendarAgendaProps) {
                     {item.daysLeft}h
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-[#103757]">
+                    <p className="truncate text-sm font-semibold text-violet-700">
                       {item.title}
                     </p>
                     <p className="truncate text-xs text-slate-500">
