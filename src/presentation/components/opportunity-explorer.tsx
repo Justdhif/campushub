@@ -224,7 +224,7 @@ export function OpportunityExplorer({
               className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400"
               aria-hidden="true"
             />
-            <Label htmlFor="opportunity-search" className="visually-hidden">
+            <Label htmlFor="opportunity-search" className="sr-only">
               Cari posisi, perusahaan, atau kata kunci
             </Label>
             <Input
@@ -371,7 +371,7 @@ export function OpportunityExplorer({
                 className="group justify-between gap-4 rounded-2xl border border-[#e1e7ed] bg-white p-5 ring-0 transition-all hover:border-violet-300 hover:shadow-[0_6px_24px_#1037570c]"
               >
                 <div className="space-y-3.5">
-                  <CardHeader className="flex-row items-start justify-between gap-3 p-0">
+                  <CardHeader className="flex flex-row items-start justify-between gap-3 p-0">
                     <div
                       className={cn(
                         "flex size-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold",

@@ -75,7 +75,7 @@ export function WorkspaceShell({ pageTitle, children }: WorkspaceShellProps) {
     <div className="min-h-screen bg-[#f6f8fa]">
       <a
         href="#main-content"
-        className="visually-hidden fixed top-3 left-3 z-50 rounded-lg bg-violet-700 px-3 py-2 text-sm font-semibold text-white shadow-md"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-violet-700 focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-md"
       >
         Lewati ke konten utama
       </a>
